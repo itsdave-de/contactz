@@ -6,6 +6,13 @@ app_email = "dev@itsdave.de"
 app_license = "gpl-3.0"
 # required_apps = []
 
+# Website Route Rules
+# -------------------
+# Custom routes for dashboard views
+website_route_rules = [
+	{"from_route": "/contactz/view/<doctype>/<document_name>", "to_route": "contactz_view"},
+]
+
 # Includes in <head>
 # ------------------
 
@@ -133,23 +140,23 @@ app_license = "gpl-3.0"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"contactz.tasks.all"
-# 	],
+scheduler_events = {
+	"cron": {
+		# Export Telefonbuch CSV every 15 minutes
+		"*/15 * * * *": [
+			"contactz.tasks.export_telefonbuch_csv"
+		]
+	}
+}
+
+# Additional scheduled tasks can be added here
+# Example:
 # 	"daily": [
-# 		"contactz.tasks.daily"
+# 		"contactz.tasks.cleanup_old_files"
 # 	],
 # 	"hourly": [
-# 		"contactz.tasks.hourly"
+# 		"contactz.tasks.export_contacts_json"
 # 	],
-# 	"weekly": [
-# 		"contactz.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"contactz.tasks.monthly"
-# 	],
-# }
 
 # Testing
 # -------

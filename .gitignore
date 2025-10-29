@@ -1,7 +1,34 @@
-.DS_Store
+# Python
 *.pyc
+*.pyo
 *.egg-info
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
 *.swp
+*.swo
+*~
 tags
-node_modules
-__pycache__
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Frappe/ERPNext
+*.log
+sites/
+build/
+dist/

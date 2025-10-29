@@ -1,0 +1,276 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block page_content %}
+<div class="container contact-dashboard mt-5">
+	<div class="row">
+		<div class="col-md-12">
+			<h1>{{ doctype }}: {{ document_name }}</h1>
+			<hr>
+		</div>
+	</div>
+
+	{% if doctype == "Contact" %}
+		<!-- Contact View -->
+		<div class="row">
+			<div class="col-md-6">
+				<h3>Contact Information</h3>
+				<table class="table table-bordered">
+					<tr>
+						<th>Name</th>
+						<td>{{ doc.first_name or "" }} {{ doc.last_name or "" }}</td>
+					</tr>
+					<tr>
+						<th>Email</th>
+						<td>
+							{% if doc.email_id %}
+								<a href="mailto:{{ doc.email_id }}">{{ doc.email_id }}</a>
+							{% endif %}
+						</td>
+					</tr>
+					<tr>
+						<th>Phone</th>
+						<td>{{ format_phone(doc.phone) }}</td>
+					</tr>
+					<tr>
+						<th>Mobile</th>
+						<td>{{ format_phone(doc.mobile_no) }}</td>
+					</tr>
+					{% if doc.designation %}
+					<tr>
+						<th>Designation</th>
+						<td>{{ doc.designation }}</td>
+					</tr>
+					{% endif %}
+					{% if doc.company_name %}
+					<tr>
+						<th>Company</th>
+						<td>{{ doc.company_name }}</td>
+					</tr>
+					{% endif %}
+				</table>
+			</div>
+
+			<div class="col-md-6">
+				{% if linked_entities %}
+				<h3>Linked To</h3>
+				<ul class="list-group">
+					{% for link in linked_entities %}
+						<li class="list-group-item">
+							<strong>{{ link.link_doctype }}:</strong>
+							<a href="/app/{{ link.link_doctype.lower() }}/{{ link.link_name }}">
+								{{ link.link_title or link.link_name }}
+							</a>
+						</li>
+					{% endfor %}
+				</ul>
+				{% endif %}
+
+				{% if addresses %}
+				<h3 class="mt-4">Addresses</h3>
+				{% for address in addresses %}
+					<div class="card mb-2">
+						<div class="card-body">
+							<h5 class="card-title">{{ address.address_type or "Address" }}</h5>
+							<p class="card-text">
+								{{ address.address_line1 }}<br>
+								{% if address.address_line2 %}{{ address.address_line2 }}<br>{% endif %}
+								{{ address.city }}, {{ address.pincode }}<br>
+								{{ address.country }}
+							</p>
+						</div>
+					</div>
+				{% endfor %}
+				{% endif %}
+			</div>
+		</div>
+
+	{% elif doctype == "Employee" %}
+		<!-- Employee View -->
+		<div class="row">
+			<div class="col-md-6">
+				<h3>Employee Information</h3>
+				<table class="table table-bordered">
+					<tr>
+						<th>Employee Name</th>
+						<td>{{ doc.employee_name }}</td>
+					</tr>
+					<tr>
+						<th>Email</th>
+						<td>
+							{% if doc.company_email %}
+								<a href="mailto:{{ doc.company_email }}">{{ doc.company_email }}</a>
+							{% elif doc.personal_email %}
+								<a href="mailto:{{ doc.personal_email }}">{{ doc.personal_email }}</a>
+							{% endif %}
+						</td>
+					</tr>
+					<tr>
+						<th>Mobile</th>
+						<td>{{ format_phone(doc.cell_number) }}</td>
+					</tr>
+					{% if doc.designation %}
+					<tr>
+						<th>Designation</th>
+						<td>{{ doc.designation }}</td>
+					</tr>
+					{% endif %}
+					{% if doc.department %}
+					<tr>
+						<th>Department</th>
+						<td>{{ doc.department }}</td>
+					</tr>
+					{% endif %}
+					{% if doc.company %}
+					<tr>
+						<th>Company</th>
+						<td>{{ doc.company }}</td>
+					</tr>
+					{% endif %}
+				</table>
+			</div>
+		</div>
+
+	{% elif doctype == "Customer" %}
+		<!-- Customer View -->
+		<div class="row">
+			<div class="col-md-6">
+				<h3>Customer Information</h3>
+				<table class="table table-bordered">
+					<tr>
+						<th>Customer Name</th>
+						<td>{{ doc.customer_name }}</td>
+					</tr>
+					<tr>
+						<th>Type</th>
+						<td>{{ doc.customer_type }}</td>
+					</tr>
+					{% if doc.customer_group %}
+					<tr>
+						<th>Customer Group</th>
+						<td>{{ doc.customer_group }}</td>
+					</tr>
+					{% endif %}
+					{% if doc.territory %}
+					<tr>
+						<th>Territory</th>
+						<td>{{ doc.territory }}</td>
+					</tr>
+					{% endif %}
+				</table>
+			</div>
+
+			<div class="col-md-6">
+				{% if contacts %}
+				<h3>Contacts</h3>
+				<ul class="list-group">
+					{% for contact in contacts %}
+						<li class="list-group-item">
+							<a href="/contactz/view/contact/{{ contact.name }}">
+								{{ contact.first_name or "" }} {{ contact.last_name or "" }}
+							</a>
+							{% if contact.email_id %}
+								<br><small><a href="mailto:{{ contact.email_id }}">{{ contact.email_id }}</a></small>
+							{% endif %}
+							{% if contact.phone %}
+								<br><small>{{ format_phone(contact.phone) }}</small>
+							{% endif %}
+						</li>
+					{% endfor %}
+				</ul>
+				{% endif %}
+			</div>
+		</div>
+
+	{% elif doctype == "Supplier" %}
+		<!-- Supplier View -->
+		<div class="row">
+			<div class="col-md-6">
+				<h3>Supplier Information</h3>
+				<table class="table table-bordered">
+					<tr>
+						<th>Supplier Name</th>
+						<td>{{ doc.supplier_name }}</td>
+					</tr>
+					<tr>
+						<th>Type</th>
+						<td>{{ doc.supplier_type }}</td>
+					</tr>
+					{% if doc.supplier_group %}
+					<tr>
+						<th>Supplier Group</th>
+						<td>{{ doc.supplier_group }}</td>
+					</tr>
+					{% endif %}
+				</table>
+			</div>
+
+			<div class="col-md-6">
+				{% if contacts %}
+				<h3>Contacts</h3>
+				<ul class="list-group">
+					{% for contact in contacts %}
+						<li class="list-group-item">
+							<a href="/contactz/view/contact/{{ contact.name }}">
+								{{ contact.first_name or "" }} {{ contact.last_name or "" }}
+							</a>
+							{% if contact.email_id %}
+								<br><small><a href="mailto:{{ contact.email_id }}">{{ contact.email_id }}</a></small>
+							{% endif %}
+							{% if contact.phone %}
+								<br><small>{{ format_phone(contact.phone) }}</small>
+							{% endif %}
+						</li>
+					{% endfor %}
+				</ul>
+				{% endif %}
+			</div>
+		</div>
+
+	{% elif doctype == "Lead" %}
+		<!-- Lead View -->
+		<div class="row">
+			<div class="col-md-6">
+				<h3>Lead Information</h3>
+				<table class="table table-bordered">
+					<tr>
+						<th>Lead Name</th>
+						<td>{{ doc.lead_name }}</td>
+					</tr>
+					{% if doc.company_name %}
+					<tr>
+						<th>Company</th>
+						<td>{{ doc.company_name }}</td>
+					</tr>
+					{% endif %}
+					<tr>
+						<th>Status</th>
+						<td>{{ doc.status }}</td>
+					</tr>
+					{% if doc.email_id %}
+					<tr>
+						<th>Email</th>
+						<td><a href="mailto:{{ doc.email_id }}">{{ doc.email_id }}</a></td>
+					</tr>
+					{% endif %}
+					{% if doc.mobile_no %}
+					<tr>
+						<th>Mobile</th>
+						<td>{{ format_phone(doc.mobile_no) }}</td>
+					</tr>
+					{% endif %}
+				</table>
+			</div>
+		</div>
+	{% endif %}
+
+	<div class="row mt-4">
+		<div class="col-md-12">
+			<a href="/app/{{ doctype.lower() }}/{{ document_name }}" class="btn btn-primary">
+				Open in ERPNext Desk
+			</a>
+		</div>
+	</div>
+</div>
+{% endblock %}

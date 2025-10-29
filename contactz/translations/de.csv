@@ -1,0 +1,58 @@
+source,translation
+Contactz Settings,Contactz Einstellungen
+Export Settings,Export-Einstellungen
+Enable CSV Generation Every 15 Minutes,CSV-Generierung alle 15 Minuten aktivieren
+Refresh Statistics,Statistiken aktualisieren
+Run Export Now,Export jetzt ausführen
+Data Sources to Include,Einzuschließende Datenquellen
+Include Contacts with Customer,Kontakte mit Kunde einschließen
+Include Contacts with Supplier,Kontakte mit Lieferant einschließen
+Include Contacts with Lead,Kontakte mit Lead einschließen
+Include Active Employees,Aktive Mitarbeiter einschließen
+Export Statistics,Export-Statistiken
+No Export File Found,Keine Export-Datei gefunden
+The Telefonbuch.csv file has not been generated yet.,Die Datei Telefonbuch.csv wurde noch nicht generiert.
+"Click the ""Run Export Now"" button above or wait for the next scheduled run (every 15 minutes).","Klicken Sie oben auf die Schaltfläche ""Export jetzt ausführen"" oder warten Sie auf den nächsten geplanten Lauf (alle 15 Minuten)."
+Static Download URL (will work after first export),Statische Download-URL (funktioniert nach erstem Export)
+Export File Information,Export-Datei-Informationen
+Static Download URL (Never Changes),Statische Download-URL (Ändert sich nie)
+Download Telefonbuch.csv,Telefonbuch.csv herunterladen
+File Size,Dateigröße
+Last Updated,Zuletzt aktualisiert
+{0} minutes ago,vor {0} Minuten
+Status,Status
+Current,Aktuell
+Outdated,Veraltet
+Data Statistics,Daten-Statistiken
+Total Contacts,Kontakte insgesamt
+With Customer,Mit Kunde
+With Supplier,Mit Lieferant
+With Lead,Mit Lead
+Active Employees,Aktive Mitarbeiter
+Total Exported,Insgesamt exportiert
+Information,Informationen
+Static URL,Statische URL
+Always use,Immer verwenden
+this URL never changes,diese URL ändert sich nie
+CSV file is generated automatically every 15 minutes when enabled,CSV-Datei wird automatisch alle 15 Minuten generiert wenn aktiviert
+"Manual export available via ""Run Export Now"" button above","Manueller Export über Schaltfläche ""Export jetzt ausführen"" oben verfügbar"
+Format,Format
+columns,Spalten
+semicolon-delimited,Semikolon-getrennt
+encoding,Codierung
+Phone numbers in international format,Telefonnummern im internationalen Format
+Includes direct links to ERPNext desk and custom dashboard,Enthält direkte Links zu ERPNext Desk und benutzerdefiniertem Dashboard
+Error Loading Statistics,Fehler beim Laden der Statistiken
+CSV generation is currently disabled in settings. Please enable it first.,CSV-Generierung ist in den Einstellungen derzeit deaktiviert. Bitte zuerst aktivieren.
+Export completed successfully! File available at {0},Export erfolgreich abgeschlossen! Datei verfügbar unter {0}
+Export completed but no file URL was returned. Check the Error Log for details.,Export abgeschlossen aber keine Datei-URL wurde zurückgegeben. Prüfen Sie das Fehlerprotokoll für Details.
+Failed to trigger export: {0},Export konnte nicht ausgelöst werden: {0}
+CSV generation enabled. Export will run every 15 minutes.,CSV-Generierung aktiviert. Export wird alle 15 Minuten ausgeführt.
+CSV generation disabled. Scheduled exports will be skipped.,CSV-Generierung deaktiviert. Geplante Exporte werden übersprungen.
+This will run the CSV export now. It may take a few seconds. Continue?,Dies führt den CSV-Export jetzt aus. Es kann einige Sekunden dauern. Fortfahren?
+Running export... Please wait.,Export wird ausgeführt... Bitte warten.
+Failed to trigger export. Please check the error log.,Export konnte nicht ausgelöst werden. Bitte prüfen Sie das Fehlerprotokoll.
+Format Compatibility,Format-Kompatibilität
+Uses default import format for,Verwendet das Standard-Importformat für
+Security Warning,Sicherheitswarnung
+"This file is publicly accessible without authentication. Do not expose this server directly to the internet if the file contains sensitive contact information. Use firewall rules, VPN, or IP restrictions to protect access.","Diese Datei ist öffentlich ohne Authentifizierung zugänglich. Setzen Sie diesen Server nicht direkt dem Internet aus, wenn die Datei vertrauliche Kontaktinformationen enthält. Verwenden Sie Firewall-Regeln, VPN oder IP-Beschränkungen zum Schutz des Zugriffs."

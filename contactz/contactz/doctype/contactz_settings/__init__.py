@@ -1,0 +1,1 @@
+# Contactz Settings DocType
