@@ -42,6 +42,8 @@ Access **Contactz Settings** to:
 
 **\*Employee export requires HRMS app to be installed**
 
+![Contactz Settings](docs/images/contactz-settings.png)
+
 ## Export Format
 
 The CSV export includes 35 columns with:
