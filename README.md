@@ -18,7 +18,7 @@ ERPNext app for exporting contacts to various formats for CTI (Computer Telephon
 
 1. Get the app:
 ```bash
-bench get-app https://github.com/your-username/contactz.git
+bench get-app https://github.com/itsdave-de/contactz.git
 ```
 
 2. Install on site:
@@ -166,7 +166,7 @@ Contributions are welcome! Please:
 ## Support
 
 For issues and questions:
-- GitHub Issues: https://github.com/your-username/contactz/issues
+- GitHub Issues: https://github.com/itsdave-de/contactz/issues
 - Documentation: See `QUICKSTART.md` and `CONTACTZ_SETTINGS_GUIDE.md`
 
 ## Credits
