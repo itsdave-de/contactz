@@ -20,6 +20,7 @@ class ContactzSettings(Document):
 		"""After save - clear cache if settings changed"""
 		frappe.cache().delete_value('contactz_settings_enabled')
 		frappe.cache().delete_value('contactz_enabled_sources')
+		frappe.cache().delete_value('contactz_file_encoding')
 
 
 @frappe.whitelist()
@@ -197,6 +198,10 @@ def get_statistics_html():
 							</span>
 						</div>
 					</div>
+					<div class="stat-item">
+						<div class="stat-label">{_("Generation Time")}</div>
+						<div class="stat-value">{stats['last_export_duration']}</div>
+					</div>
 				</div>
 			</div>
 
@@ -237,7 +242,7 @@ def get_statistics_html():
 					<li><strong>{_("Static URL")}:</strong> {_("Always use")} <code>{full_file_url}</code> - {_("this URL never changes")}</li>
 					<li>{_("CSV file is generated automatically every 15 minutes when enabled")}</li>
 					<li>{_('Manual export available via "Run Export Now" button above')}</li>
-					<li>{_("Format")}: 35 {_("columns")}, {_("semicolon-delimited")}, UTF-8 {_("encoding")}</li>
+					<li>{_("Format")}: 35 {_("columns")}, {_("semicolon-delimited")}, {get_file_encoding().upper()} {_("encoding")}</li>
 					<li>{_("Phone numbers in international format")} (0049 XX XXXXXXX)</li>
 					<li>{_("Includes direct links to ERPNext desk and custom dashboard")}</li>
 					<li><strong>{_("Format Compatibility")}:</strong> {_("Uses default import format for")} <a href="https://www.phonesuite.de/de/" target="_blank">PhoneSuite CTI</a></li>
@@ -276,6 +281,10 @@ def get_export_statistics():
 	"""
 	stats = {}
 
+	# Get excluded customer groups from settings
+	enabled_sources = get_enabled_sources()
+	excluded_groups = enabled_sources.get('excluded_customer_groups', [])
+
 	# Total contacts with contact info
 	stats['total_contacts'] = frappe.db.sql("""
 		SELECT COUNT(*) as count
@@ -284,13 +293,24 @@ def get_export_statistics():
 		AND (c.email_id IS NOT NULL OR c.phone IS NOT NULL OR c.mobile_no IS NOT NULL)
 	""", as_dict=True)[0].count
 
-	# Contacts with customer link
-	stats['contacts_with_customer'] = frappe.db.sql("""
-		SELECT COUNT(DISTINCT c.name) as count
-		FROM tabContact c
-		INNER JOIN `tabDynamic Link` dl ON dl.parent = c.name AND dl.parenttype = 'Contact' AND dl.link_doctype = 'Customer'
-		WHERE c.docstatus = 0
-	""", as_dict=True)[0].count
+	# Contacts with customer link (excluding excluded groups)
+	if excluded_groups:
+		group_placeholders = ', '.join(['%s'] * len(excluded_groups))
+		stats['contacts_with_customer'] = frappe.db.sql(f"""
+			SELECT COUNT(DISTINCT c.name) as count
+			FROM tabContact c
+			INNER JOIN `tabDynamic Link` dl ON dl.parent = c.name AND dl.parenttype = 'Contact' AND dl.link_doctype = 'Customer'
+			INNER JOIN tabCustomer cust ON cust.name = dl.link_name
+			WHERE c.docstatus = 0
+			AND cust.customer_group NOT IN ({group_placeholders})
+		""", tuple(excluded_groups), as_dict=True)[0].count
+	else:
+		stats['contacts_with_customer'] = frappe.db.sql("""
+			SELECT COUNT(DISTINCT c.name) as count
+			FROM tabContact c
+			INNER JOIN `tabDynamic Link` dl ON dl.parent = c.name AND dl.parenttype = 'Contact' AND dl.link_doctype = 'Customer'
+			WHERE c.docstatus = 0
+		""", as_dict=True)[0].count
 
 	# Contacts with supplier link
 	stats['contacts_with_supplier'] = frappe.db.sql("""
@@ -323,6 +343,16 @@ def get_export_statistics():
 
 	# Total that will be exported (approximate)
 	stats['total_exported'] = stats['contacts_with_customer'] + stats['contacts_with_supplier'] + stats['contacts_with_lead'] + stats['active_employees']
+
+	# Get last export duration from cache
+	last_duration = frappe.cache().get_value('contactz_last_export_duration')
+	if last_duration is not None:
+		if last_duration < 1:
+			stats['last_export_duration'] = f"{last_duration * 1000:.0f} ms"
+		else:
+			stats['last_export_duration'] = f"{last_duration:.2f} s"
+	else:
+		stats['last_export_duration'] = "-"
 
 	return stats
 
@@ -357,7 +387,7 @@ def get_enabled_sources():
 	Get list of enabled data sources from settings
 
 	Returns:
-		Dictionary with boolean flags for each source
+		Dictionary with boolean flags for each source and excluded customer groups
 	"""
 	# Try cache first
 	cache_key = 'contactz_enabled_sources'
@@ -370,7 +400,8 @@ def get_enabled_sources():
 				'customer': cint(settings.include_contacts_with_customer),
 				'supplier': cint(settings.include_contacts_with_supplier),
 				'lead': cint(settings.include_contacts_with_lead),
-				'employee': cint(settings.include_employees)
+				'employee': cint(settings.include_employees),
+				'excluded_customer_groups': [row.customer_group for row in settings.excluded_customer_groups] if settings.excluded_customer_groups else []
 			}
 		except:
 			# Default: all enabled
@@ -378,13 +409,38 @@ def get_enabled_sources():
 				'customer': 1,
 				'supplier': 1,
 				'lead': 1,
-				'employee': 1
+				'employee': 1,
+				'excluded_customer_groups': []
 			}
 
 		# Cache for 5 minutes
 		frappe.cache().set_value(cache_key, sources, expires_in_sec=300)
 
 	return sources
+
+
+def get_file_encoding():
+	"""
+	Get file encoding from settings
+
+	Returns:
+		Encoding string (e.g., 'cp1252', 'utf-8')
+	"""
+	# Try cache first
+	cache_key = 'contactz_file_encoding'
+	encoding = frappe.cache().get_value(cache_key)
+
+	if encoding is None:
+		try:
+			settings = frappe.get_single('Contactz Settings')
+			encoding = settings.file_encoding or 'cp1252'
+		except:
+			encoding = 'cp1252'
+
+		# Cache for 5 minutes
+		frappe.cache().set_value(cache_key, encoding, expires_in_sec=300)
+
+	return encoding
 
 
 @frappe.whitelist()

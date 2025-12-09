@@ -4,6 +4,7 @@ Entry points for scheduler jobs
 """
 
 import frappe
+import time
 from contactz.exporters.telefonbuch_csv import TelefonbuchCSVExporter
 
 
@@ -27,12 +28,17 @@ def export_telefonbuch_csv():
             frappe.logger().info("Telefonbuch CSV export skipped - disabled in Contactz Settings")
             return None
 
-        # Run the export
+        # Run the export and track duration
+        start_time = time.time()
         exporter = TelefonbuchCSVExporter()
         file_url = exporter.export()
+        duration_seconds = time.time() - start_time
+
+        # Store duration in cache for statistics display
+        frappe.cache().set_value('contactz_last_export_duration', duration_seconds)
 
         if file_url:
-            frappe.logger().info(f"Telefonbuch CSV export successful: {file_url}")
+            frappe.logger().info(f"Telefonbuch CSV export successful: {file_url} (took {duration_seconds:.2f}s)")
         else:
             frappe.logger().warning("Telefonbuch CSV export returned no URL")
 

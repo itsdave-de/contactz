@@ -20,6 +20,11 @@ class TelefonbuchCSVExporter(BaseContactExporter):
     def get_file_name(self):
         return "Telefonbuch.csv"
 
+    def get_encoding(self):
+        """Get encoding from Contactz Settings"""
+        from contactz.contactz.doctype.contactz_settings.contactz_settings import get_file_encoding
+        return get_file_encoding()
+
     def fetch_data(self):
         """
         Fetch contact data using simplified approach:
@@ -64,8 +69,25 @@ class TelefonbuchCSVExporter(BaseContactExporter):
             frappe.logger().info("Telefonbuch: No contact sources enabled (Customer/Supplier/Lead all disabled)")
             return []
 
+        # Get excluded customer groups
+        excluded_customer_groups = enabled_sources.get('excluded_customer_groups', [])
+
         # Format for SQL IN clause
         entity_types_placeholders = ', '.join(['%s'] * len(entity_types))
+
+        # Build exclusion clause for customer groups
+        exclusion_clause = ""
+        query_params = list(entity_types)
+
+        if excluded_customer_groups and 'Customer' in entity_types:
+            group_placeholders = ', '.join(['%s'] * len(excluded_customer_groups))
+            exclusion_clause = f"""
+            AND NOT (
+                dl.link_doctype = 'Customer'
+                AND cust.customer_group IN ({group_placeholders})
+            )
+            """
+            query_params.extend(excluded_customer_groups)
 
         query = f"""
             SELECT DISTINCT
@@ -111,9 +133,13 @@ class TelefonbuchCSVExporter(BaseContactExporter):
                 (COALESCE(c.first_name, '') != '' OR COALESCE(c.last_name, '') != '' OR COALESCE(c.company_name, '') != '')
                 AND (c.email_id IS NOT NULL OR c.phone IS NOT NULL OR c.mobile_no IS NOT NULL)
             )
+            {exclusion_clause}
         """
 
-        contacts = frappe.db.sql(query, tuple(entity_types), as_dict=True)
+        contacts = frappe.db.sql(query, tuple(query_params), as_dict=True)
+
+        if excluded_customer_groups:
+            frappe.logger().info(f"Telefonbuch: Excluding customer groups: {excluded_customer_groups}")
 
         # Get addresses for each contact (ONE address per entity)
         for contact in contacts:

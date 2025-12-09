@@ -7,6 +7,7 @@
  "field_order": [
   "export_settings_section",
   "enable_csv_generation",
+  "file_encoding",
   "column_break_2",
   "refresh_statistics",
   "run_export_now",
@@ -16,6 +17,8 @@
   "column_break_4",
   "include_contacts_with_lead",
   "include_employees",
+  "exclusion_filters_section",
+  "excluded_customer_groups",
   "statistics_section",
   "export_statistics"
  ],
@@ -30,6 +33,14 @@
    "fieldname": "enable_csv_generation",
    "fieldtype": "Check",
    "label": "Enable CSV Generation Every 15 Minutes"
+  },
+  {
+   "default": "cp1252",
+   "description": "Windows-1252 (cp1252) recommended for PhoneSuite compatibility with German characters",
+   "fieldname": "file_encoding",
+   "fieldtype": "Select",
+   "label": "File Encoding",
+   "options": "cp1252\nutf-8\niso-8859-1"
   },
   {
    "fieldname": "column_break_2",
@@ -77,6 +88,18 @@
    "fieldname": "include_employees",
    "fieldtype": "Check",
    "label": "Include Active Employees"
+  },
+  {
+   "fieldname": "exclusion_filters_section",
+   "fieldtype": "Section Break",
+   "label": "Exclusion Filters"
+  },
+  {
+   "description": "Contacts linked to Customers in these groups will be excluded from the export",
+   "fieldname": "excluded_customer_groups",
+   "fieldtype": "Table MultiSelect",
+   "label": "Excluded Customer Groups",
+   "options": "Contactz Excluded Customer Group"
   },
   {
    "fieldname": "statistics_section",

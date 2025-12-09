@@ -70,6 +70,18 @@ class BaseContactExporter(ABC):
         """
         raise NotImplementedError("Subclasses must implement get_file_name()")
 
+    def get_encoding(self):
+        """
+        Get the file encoding for export
+
+        Override in subclass to change encoding.
+        Default is UTF-8.
+
+        Returns:
+            Encoding string (e.g., 'utf-8', 'cp1252', 'iso-8859-1')
+        """
+        return 'utf-8'
+
     def export(self):
         """
         Main export method - orchestrates the export process
@@ -123,7 +135,8 @@ class BaseContactExporter(ABC):
 
         # Convert string to bytes if needed
         if isinstance(content, str):
-            content_bytes = content.encode('utf-8')
+            encoding = self.get_encoding()
+            content_bytes = content.encode(encoding, errors='replace')
         else:
             content_bytes = content
 
